@@ -5,25 +5,20 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.stream = void 0;
 const winston_1 = __importDefault(require("winston"));
-const winston_transport_sentry_node_1 = __importDefault(require("winston-transport-sentry-node"));
-const config_1 = require("./config");
-const options = {
-    console: {
-        level: "debug",
-        handleExceptions: true,
-    },
-    sentry: {
-        level: "error",
-        sentry: {
-            dsn: config_1.config.sentryDsn,
-        },
-    },
-};
-const winstonLoggerTransports = [new winston_transport_sentry_node_1.default(options.sentry)];
+winston_1.default.addColors({
+    error: "red",
+    warn: "yellow",
+    info: "green",
+    http: "magenta",
+    debug: "blue",
+});
 const logger = winston_1.default.createLogger({
     format: winston_1.default.format.combine(winston_1.default.format.timestamp(), winston_1.default.format.json()),
-    transports: winstonLoggerTransports,
-    exitOnError: false,
+    transports: [
+        new winston_1.default.transports.Console(),
+        new winston_1.default.transports.File({ filename: "error.log", level: "error" }),
+        new winston_1.default.transports.File({ filename: "combined.log" }),
+    ],
 });
 exports.stream = {
     write: (message) => {

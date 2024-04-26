@@ -1,29 +1,24 @@
 import winston from "winston";
-import Sentry from "winston-transport-sentry-node";
-import { config } from "./config";
 
-const options = {
-  console: {
-    level: "debug",
-    handleExceptions: true,
-  },
-  sentry: {
-    level: "error",
-    sentry: {
-      dsn: config.sentryDsn,
-    },
-  },
-};
-
-const winstonLoggerTransports: any = [new Sentry(options.sentry)];
+winston.addColors({
+  error: "red",
+  warn: "yellow",
+  info: "green",
+  http: "magenta",
+  debug: "blue",
+});
 
 const logger = winston.createLogger({
   format: winston.format.combine(
     winston.format.timestamp(),
     winston.format.json()
   ),
-  transports: winstonLoggerTransports,
-  exitOnError: false,
+
+  transports: [
+    new winston.transports.Console(),
+    new winston.transports.File({ filename: "error.log", level: "error" }),
+    new winston.transports.File({ filename: "combined.log" }),
+  ],
 });
 
 export const stream = {
